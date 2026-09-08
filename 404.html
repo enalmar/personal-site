@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page not found — Enrique Alabort</title>
+    <meta name="robots" content="noindex">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .notfound {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: var(--space-2xl) var(--space-lg);
+            gap: var(--space-md);
+        }
+        .notfound h1 {
+            font-family: var(--font-serif);
+            font-size: clamp(2.5rem, 7vw, 4.5rem);
+            font-weight: 500;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+        }
+        .notfound p {
+            font-size: 1.05rem;
+            color: var(--color-text-muted);
+            max-width: 34rem;
+        }
+        .notfound .btn { margin-top: var(--space-md); }
+    </style>
+</head>
+<body>
+    <main class="notfound">
+        <h1>Page not found</h1>
+        <p>That page doesn’t exist — it may have moved, or the link may be out of date.</p>
+        <a href="/" class="btn btn-outline">Back to the homepage</a>
+    </main>
+</body>
+</html>
