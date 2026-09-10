@@ -8,7 +8,8 @@
     <meta name="description" content="Executive leader in product development, advanced manufacturing & deep tech. Co-Founder at Alloyed. Value creation from R&D to scale.">
     <link rel="canonical" href="https://enriquealabort.uk/">
     <meta name="author" content="Enrique Alabort">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#07090d">
+    <meta name="color-scheme" content="dark">
 
     <!-- Social sharing -->
     <meta property="og:type" content="profile">
@@ -31,8 +32,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=7">
 
     <script type="application/ld+json">
     {
@@ -63,10 +64,26 @@
 
     <a class="skip-link" href="#main">Skip to content</a>
 
-    <header class="site-nav" id="siteNav">
-        <div class="site-nav-inner">
-            <a href="#home" class="site-nav-name">Enrique Alabort</a>
-            <nav class="site-nav-links" aria-label="Sections">
+    <!-- The lattice lives on one fixed canvas behind everything, so the glass
+         cards can blur it and the print-front can sweep across the whole page. -->
+    <canvas id="lattice" class="lattice-canvas" aria-hidden="true"></canvas>
+
+    <header class="topbar" id="topbar">
+        <div class="topbar-inner glass">
+            <a href="#home" class="topbar-name">Enrique Alabort</a>
+
+            <div class="lattice-controls" id="latticeControls">
+                <label class="density" for="densitySlider">
+                    <span class="density-label">Beam density</span>
+                    <input type="range" id="densitySlider" min="0" max="100" value="48" step="1" aria-valuetext="Generating">
+                </label>
+                <output class="density-value" id="densityValue" for="densitySlider" aria-live="off">— struts</output>
+                <button type="button" class="regen-btn" id="regenBtn" aria-label="Generate a new lattice" title="New lattice">
+                    <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9"/><path d="M13.5 2.5v3h-3"/></svg>
+                </button>
+            </div>
+
+            <nav class="topbar-links" aria-label="Sections">
                 <a href="#about">Profile</a>
                 <a href="#experience">Experience</a>
                 <a href="#research">Innovation</a>
@@ -77,43 +94,46 @@
 
     <main id="main">
 
-    <section id="home" class="hero">
-        <canvas id="heroCanvas" class="hero-canvas" aria-hidden="true"></canvas>
-        <div class="hero-container">
+    <section id="home" class="hero" aria-label="Interactive lattice">
+        <div class="hero-lockup">
             <h1 class="hero-statement">
                 <span class="statement-line"><span class="dynamic-word dynamic-word-1" data-words='["Scaling", "Building", "Leading", "Driving", "Transforming"]'>Scaling</span> <span class="dynamic-word dynamic-word-2" data-words='["deep tech", "manufacturing", "products", "innovation", "operations", "technologies"]'>deep tech</span>.</span>
                 <span class="statement-line statement-subtitle">From research to production.</span>
             </h1>
-            <button type="button" class="scroll-indicator" aria-label="Scroll to profile">
-                <span class="scroll-text">Explore</span>
-                <svg class="scroll-arrow" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l5 5 5-5"/></svg>
-            </button>
         </div>
+        <p class="hero-hint glass-lite" id="heroHint">
+            <span class="hint-item hint-cursor"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M3 2.5l9.5 4.2-4.1 1.3-1.3 4.1z"/></svg>Move the cursor</span>
+            <span class="hint-item hint-touch"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8.5V3.2a1.2 1.2 0 0 1 2.4 0V8l3.1.9a2 2 0 0 1 1.4 2l-.4 2.2A1.6 1.6 0 0 1 11 14.5H7.6a2 2 0 0 1-1.6-.8L3.6 10.5a1 1 0 0 1 1.5-1.3L6 10"/></svg>Drag to explore</span>
+            <span class="hint-sep" aria-hidden="true"></span>
+            <span class="hint-item"><svg class="hint-chevron" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l5 5 5-5"/></svg>Scroll to print</span>
+        </p>
     </section>
 
-    <section id="about" class="about" aria-labelledby="about-title">
+    <section id="about" class="section" aria-labelledby="about-title">
         <div class="container">
             <h2 class="section-title" id="about-title">Profile</h2>
-            <p class="about-lead">
-                I lead at the intersection of deep tech and commercial execution: scaling advanced manufacturing, driving product introduction, and building teams that turn fundamental R&D into products.
-            </p>
-            <p class="about-body">
-                Oxford-trained in engineering; co-founder and senior leader at Alloyed. I combine technical depth with operational and commercial leadership — from lab and pilot to mass production.
-            </p>
+            <div class="glass card lead-card">
+                <p class="about-lead">
+                    I lead at the intersection of deep tech and commercial execution: scaling advanced manufacturing, driving product introduction, and building teams that turn fundamental R&D into products.
+                </p>
+                <p class="about-body">
+                    Oxford-trained in engineering; co-founder and senior leader at Alloyed. I combine technical depth with operational and commercial leadership — from lab and pilot to mass production.
+                </p>
+            </div>
             <div class="expertise-areas">
-                <div class="expertise-item">
+                <div class="glass card expertise-item">
                     <span class="expertise-label">Materials &amp; process</span>
                     <p>Alloy design, high-temperature processing, characterisation, simulation</p>
                 </div>
-                <div class="expertise-item">
+                <div class="glass card expertise-item">
                     <span class="expertise-label">Digital factory</span>
                     <p>Additive manufacturing, process stability, scaling &amp; industrialisation, quality systems, factory sentience</p>
                 </div>
-                <div class="expertise-item">
+                <div class="glass card expertise-item">
                     <span class="expertise-label">Product &amp; NPI</span>
                     <p>Technical leadership, product development, design, new product introduction</p>
                 </div>
-                <div class="expertise-item">
+                <div class="glass card expertise-item">
                     <span class="expertise-label">Business &amp; operations</span>
                     <p>P&amp;L ownership, revenue growth, international operations, team building</p>
                 </div>
@@ -121,96 +141,104 @@
         </div>
     </section>
 
-    <section id="experience" class="experience" aria-labelledby="experience-title">
+    <section id="experience" class="section" aria-labelledby="experience-title">
         <div class="container">
             <h2 class="section-title" id="experience-title">Experience</h2>
-            <div class="timeline">
-                <article class="timeline-item current">
-                    <time class="timeline-date" datetime="2025-07">Jul 2025</time>
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-content">
-                        <h3>Managing Director, Component Engineering</h3>
-                        <p class="timeline-company">Alloyed</p>
-                        <p>Leading component engineering and new product introduction; taking manufacturing technologies from proof-of-concept to mass-production.</p>
-                        <span class="achievement">Technology scaling</span>
-                    </div>
-                </article>
+            <div class="glass card timeline-card">
+                <div class="timeline">
+                    <article class="timeline-item current">
+                        <time class="timeline-date" datetime="2025-07">Jul 2025</time>
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h3>Managing Director, Component Engineering</h3>
+                            <p class="timeline-company">Alloyed</p>
+                            <p>Leading component engineering and new product introduction; taking manufacturing technologies from proof-of-concept to mass-production.</p>
+                            <span class="achievement">Technology scaling</span>
+                        </div>
+                    </article>
 
-                <article class="timeline-item">
-                    <time class="timeline-date" datetime="2023-05">May 2023</time>
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-content">
-                        <h3>Managing Director, Electronics</h3>
-                        <p class="timeline-company">Alloyed</p>
-                        <p>Led electronics business unit (additive for consumer electronics). Core technologies for AR/VR wearables.</p>
-                        <span class="achievement">50%+ revenue growth · multi-million £ turnover</span>
-                    </div>
-                </article>
+                    <article class="timeline-item">
+                        <time class="timeline-date" datetime="2023-05">May 2023</time>
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h3>Managing Director, Electronics</h3>
+                            <p class="timeline-company">Alloyed</p>
+                            <p>Led electronics business unit (additive for consumer electronics). Core technologies for AR/VR wearables.</p>
+                            <span class="achievement">50%+ revenue growth · multi-million £ turnover</span>
+                        </div>
+                    </article>
 
-                <article class="timeline-item">
-                    <time class="timeline-date" datetime="2022-01">Jan 2022</time>
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-content">
-                        <h3>Head of Alloyed US and Japan</h3>
-                        <p class="timeline-company">Alloyed</p>
-                        <p>Built US manufacturing operation from zero: facility, hiring, AS9100D quality system.</p>
-                        <span class="achievement">Greenfield US operations</span>
-                    </div>
-                </article>
+                    <article class="timeline-item">
+                        <time class="timeline-date" datetime="2022-01">Jan 2022</time>
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h3>Head of Alloyed US and Japan</h3>
+                            <p class="timeline-company">Alloyed</p>
+                            <p>Built US manufacturing operation from zero: facility, hiring, AS9100D quality system.</p>
+                            <span class="achievement">Greenfield US operations</span>
+                        </div>
+                    </article>
 
-                <article class="timeline-item">
-                    <time class="timeline-date" datetime="2017-10">Oct 2017</time>
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-content">
-                        <h3>Senior Research Fellow</h3>
-                        <p class="timeline-company">University of Oxford</p>
-                        <p>Led high-value programmes with IHI for Oxford–IHI Centre for High-Temperature Materials.</p>
-                        <span class="achievement">Oxford–IHI Centre</span>
-                    </div>
-                </article>
+                    <article class="timeline-item">
+                        <time class="timeline-date" datetime="2017-10">Oct 2017</time>
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h3>Senior Research Fellow</h3>
+                            <p class="timeline-company">University of Oxford</p>
+                            <p>Led high-value programmes with IHI for Oxford–IHI Centre for High-Temperature Materials.</p>
+                            <span class="achievement">Oxford–IHI Centre</span>
+                        </div>
+                    </article>
 
-                <article class="timeline-item">
-                    <time class="timeline-date" datetime="2017-07">Jul 2017</time>
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-content">
-                        <h3>Programme Director</h3>
-                        <p class="timeline-company">OxMet Technologies</p>
-                        <p>Founding team; led alloy and product design development for orthopaedic implants. Delivered technology base for biomedical implants business.</p>
-                        <span class="achievement">Founding team · biomedical</span>
-                    </div>
-                </article>
+                    <article class="timeline-item">
+                        <time class="timeline-date" datetime="2017-07">Jul 2017</time>
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h3>Programme Director</h3>
+                            <p class="timeline-company">OxMet Technologies</p>
+                            <p>Founding team; led alloy and product design development for orthopaedic implants. Delivered technology base for biomedical implants business.</p>
+                            <span class="achievement">Founding team · biomedical</span>
+                        </div>
+                    </article>
 
-                <article class="timeline-item">
-                    <time class="timeline-date" datetime="2015-10">Oct 2015</time>
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-content">
-                        <h3>Postdoctoral Research Associate</h3>
-                        <p class="timeline-company">University of Oxford</p>
-                        <p>Finite element analysis and crystal plasticity modelling for extreme conditions.</p>
-                        <span class="achievement">Materials modelling</span>
-                    </div>
-                </article>
+                    <article class="timeline-item">
+                        <time class="timeline-date" datetime="2015-10">Oct 2015</time>
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h3>Postdoctoral Research Associate</h3>
+                            <p class="timeline-company">University of Oxford</p>
+                            <p>Finite element analysis and crystal plasticity modelling for extreme conditions.</p>
+                            <span class="achievement">Materials modelling</span>
+                        </div>
+                    </article>
 
-                <article class="timeline-item">
-                    <time class="timeline-date" datetime="2011-10">Oct 2011</time>
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-content">
-                        <h3>DPhil in Engineering Science</h3>
-                        <p class="timeline-company">University of Oxford</p>
-                        <p>Process modelling, manufacturing simulation, and high-temperature processing.</p>
-                        <span class="achievement">Rolls-Royce sponsored</span>
-                    </div>
-                </article>
+                    <article class="timeline-item">
+                        <time class="timeline-date" datetime="2011-10">Oct 2011</time>
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h3>DPhil in Engineering Science</h3>
+                            <p class="timeline-company">University of Oxford</p>
+                            <p>Process modelling, manufacturing simulation, and high-temperature processing.</p>
+                            <span class="achievement">Rolls-Royce sponsored</span>
+                        </div>
+                    </article>
+                </div>
             </div>
         </div>
     </section>
 
-    <section id="research" class="research" aria-labelledby="research-title">
+    <section id="research" class="section" aria-labelledby="research-title">
         <div class="container">
             <h2 class="section-title" id="research-title">Innovation &amp; impact</h2>
-            <p class="research-intro">Bridging materials science, manufacturing and markets: additive manufacturing, high-performance alloys, and commercial applications from aerospace to biomedical and consumer electronics.</p>
+            <div class="glass card intro-card">
+                <p class="research-intro">Bridging materials science, manufacturing and markets: additive manufacturing, high-performance alloys, and commercial applications from aerospace to biomedical and consumer electronics.</p>
+                <a href="https://scholar.google.co.uk/citations?user=bzOAaRsAAAAJ&amp;hl=en" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+                    Google Scholar
+                </a>
+            </div>
             <div class="research-areas">
-                <div class="research-area">
+                <div class="glass card research-area">
                     <h3>Materials</h3>
                     <ul>
                         <li>Titanium alloys (biomedical)</li>
@@ -219,7 +247,7 @@
                         <li>Crystal plasticity &amp; superplasticity</li>
                     </ul>
                 </div>
-                <div class="research-area">
+                <div class="glass card research-area">
                     <h3>Manufacturing</h3>
                     <ul>
                         <li>Laser Powder Bed Fusion (LPBF)</li>
@@ -228,7 +256,7 @@
                         <li>Scaling &amp; optimisation</li>
                     </ul>
                 </div>
-                <div class="research-area">
+                <div class="glass card research-area">
                     <h3>Applications</h3>
                     <ul>
                         <li>Aerospace</li>
@@ -238,19 +266,13 @@
                     </ul>
                 </div>
             </div>
-            <div class="research-cta">
-                <a href="https://scholar.google.co.uk/citations?user=bzOAaRsAAAAJ&amp;hl=en" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
-                    Google Scholar
-                </a>
-            </div>
         </div>
     </section>
 
-    <section id="contact" class="contact" aria-labelledby="contact-title">
+    <section id="contact" class="section" aria-labelledby="contact-title">
         <div class="container">
             <h2 class="section-title" id="contact-title">Connect</h2>
-            <div class="contact-card">
+            <div class="glass card contact-card">
                 <p class="contact-text">Interested in discussing partnerships, deep-tech ventures, or industry challenges in advanced manufacturing.</p>
                 <a href="https://www.linkedin.com/in/ealabort" target="_blank" rel="noopener noreferrer" class="linkedin-btn">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>
@@ -268,6 +290,6 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=9"></script>
 </body>
 </html>
