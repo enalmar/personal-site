@@ -159,7 +159,9 @@
     var fieldA = 0;
     var frozen = false;
     var frontY = Infinity;             // melt line, viewport px; anchored to the page
+    var zoomP = 0;                     // 0..1 through the final zoom-out into the implant
     var rafId = null;
+    var partSection = document.getElementById('part');
     var aboutEnd = document.querySelector('#about .container > :last-child');
     var expStart = document.getElementById('experience-title');
 
@@ -187,8 +189,8 @@
 
     /* ---------- Sizing ---------- */
     function sizeCanvases() {
-        W = window.innerWidth;
-        H = window.innerHeight;
+        W = canvas.offsetWidth || window.innerWidth;
+        H = canvas.offsetHeight || window.innerHeight;
         canvas.width = Math.round(W * DPR);
         canvas.height = Math.round(H * DPR);
         ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
@@ -209,12 +211,13 @@
     }
     function spacingForTarget(target) {
         var nodesWanted = target / STRUTS_PER_NODE;
-        var r = Math.sqrt(W * H * 0.72 / nodesWanted);
-        var m = r * 1.25;                                  // sampling margin beyond the viewport
-        return Math.sqrt((W + 2 * m) * (H + 2 * m) * 0.72 / nodesWanted);
+        return Math.sqrt(W * H * 0.72 / nodesWanted);
     }
 
-    /* ---------- Poisson-disc sampling (Bridson) ---------- */
+    /* ---------- Poisson-disc sampling (Bridson), on a torus ----------
+       The domain wraps, so the lattice tiles seamlessly by plain translation.
+       That is what lets the final zoom-out cover the implant's patch with
+       copies of the on-screen lattice without a visible seam. */
     function poisson(w, h, r) {
         var k = 22, cs = r / Math.SQRT2;
         var gw = Math.ceil(w / cs), gh = Math.ceil(h / cs);
@@ -222,13 +225,14 @@
         var pts = [], active = [];
         var r2 = r * r;
 
+        function wrap(v, size) { v = v % size; return v < 0 ? v + size : v; }
         function add(x, y) {
             var i = pts.length / 2;
             pts.push(x, y);
             g[((y / cs) | 0) * gw + ((x / cs) | 0)] = i;
             active.push(i);
         }
-        add(w * (0.3 + rng() * 0.4), h * (0.3 + rng() * 0.4));
+        add(rng() * w, rng() * h);
 
         while (active.length) {
             var ai = (rng() * active.length) | 0;
@@ -236,14 +240,16 @@
             var found = false;
             for (var n = 0; n < k; n++) {
                 var ang = rng() * TAU, rad = r * (1 + rng());
-                var x = px + Math.cos(ang) * rad, y = py + Math.sin(ang) * rad;
-                if (x < 0 || y < 0 || x >= w || y >= h) continue;
+                var x = wrap(px + Math.cos(ang) * rad, w), y = wrap(py + Math.sin(ang) * rad, h);
                 var gx = (x / cs) | 0, gy = (y / cs) | 0, ok = true;
-                for (var yy = Math.max(0, gy - 2); yy <= Math.min(gh - 1, gy + 2) && ok; yy++) {
-                    for (var xx = Math.max(0, gx - 2); xx <= Math.min(gw - 1, gx + 2); xx++) {
-                        var j = g[yy * gw + xx];
+                for (var yy = gy - 3; yy <= gy + 3 && ok; yy++) {
+                    var cy = ((yy % gh) + gh) % gh;
+                    for (var xx = gx - 3; xx <= gx + 3; xx++) {
+                        var j = g[cy * gw + ((xx % gw) + gw) % gw];
                         if (j < 0) continue;
-                        var dx = pts[j * 2] - x, dy = pts[j * 2 + 1] - y;
+                        var dx = Math.abs(pts[j * 2] - x), dy = Math.abs(pts[j * 2 + 1] - y);
+                        if (dx > w / 2) dx = w - dx;
+                        if (dy > h / 2) dy = h - dy;
                         if (dx * dx + dy * dy < r2) { ok = false; break; }
                     }
                 }
@@ -344,7 +350,7 @@
         buildLattice(r);
         // Correct toward the target count (each pass is only a few ms).
         for (var pass = 0; pass < 3; pass++) {
-            var err = edges.length / target;
+            var err = strutCount() / target;
             if (err > 0.97 && err < 1.03) break;
             r *= Math.sqrt(err);
             rng = mulberry32(seed);
@@ -353,18 +359,37 @@
         finishGenerate(withGrow);
     }
 
+    // Struts that cross the wrap boundary exist on both sides; count them once.
+    function strutCount() {
+        var c = 0;
+        for (var i = 0; i < edges.length; i++) if (!edges[i].dup) c++;
+        return c;
+    }
+
     function buildLattice(r) {
         spacing = r;
-        var m = spacing * 1.25;
-        var pts = poisson(W + 2 * m, H + 2 * m, spacing);
+        var maxLen = spacing * 2.4;
+        var m = spacing * 2.7;                     // periodic copies reach past the longest strut
+        var pts = poisson(W, H, spacing);
         nodes = [];
-        for (var i = 0; i < pts.length; i += 2) nodes.push({ x: pts[i] - m, y: pts[i + 1] - m });
+        var i;
+        for (i = 0; i < pts.length; i += 2) nodes.push({ x: pts[i], y: pts[i + 1], core: true });
+        var n0 = nodes.length;
+        for (i = 0; i < n0; i++) {
+            for (var sx = -1; sx <= 1; sx++) {
+                for (var sy = -1; sy <= 1; sy++) {
+                    if (!sx && !sy) continue;
+                    var x = nodes[i].x + sx * W, y = nodes[i].y + sy * H;
+                    if (x >= -m && x <= W + m && y >= -m && y <= H + m) nodes.push({ x: x, y: y, core: false });
+                }
+            }
+        }
 
         var raw = delaunayEdges(nodes);
-        var maxLen = spacing * 2.4;
         edges = [];
         for (i = 0; i < raw.length; i++) {
             var e = raw[i], a = nodes[e.a], b = nodes[e.b];
+            if (!a.core && !b.core) continue;
             var dx = b.x - a.x, dy = b.y - a.y, len = Math.sqrt(dx * dx + dy * dy);
             if (len > maxLen) continue;
             // Self-supporting only: no strut flatter than 30° to the horizontal.
@@ -388,6 +413,16 @@
             var E = edges[i];
             E.a = remap[E.a]; E.b = remap[E.b];
             adj[E.a].push(i); adj[E.b].push(i);
+            // A strut crossing the wrap boundary exists twice (once from each
+            // side). The single-tile renders need both halves; renders that
+            // lay whole tiles side by side must draw only one, so mark the
+            // copy whose off-tile node sits to the top/left as the duplicate.
+            var na = nodes[E.a], nb = nodes[E.b], off = !na.core ? na : (!nb.core ? nb : null);
+            E.dup = false;
+            if (off) {
+                var sx = off.x >= W ? 1 : off.x < 0 ? -1 : 0, sy = off.y >= H ? 1 : off.y < 0 ? -1 : 0;
+                E.dup = !(sy > 0 || (sy === 0 && sx > 0));
+            }
         }
         buildGrid();
     }
@@ -402,7 +437,7 @@
         renderWire();
         scheduleMetal();
 
-        var label = edges.length.toLocaleString() + ' struts';
+        var label = strutCount().toLocaleString() + ' struts';
         if (densityValue) densityValue.textContent = label;
         slider.setAttribute('aria-valuetext', label);
 
@@ -519,6 +554,7 @@
                 if (!work()) {
                     finishMetal();
                     metalReady = true;
+                    scheduleDome();
                     if (frontY < H) kick();
                     return;
                 }
@@ -594,9 +630,13 @@
         }
 
         ctx.clearRect(0, 0, W, H);
-        if (growing) drawGrow(growT); else ctx.drawImage(wire, 0, 0, W, H);
-        if (fieldA > 0.004 && !growing) drawField();
-        if (frontY < H) drawPrint();
+        if (zoomP > 0) {
+            drawZoom(zoomP);
+        } else {
+            if (growing) drawGrow(growT); else ctx.drawImage(wire, 0, 0, W, H);
+            if (fieldA > 0.004 && !growing) drawField();
+            if (frontY < H) drawPrint();
+        }
 
         if (active && !document.hidden) kick();
     }
@@ -816,6 +856,281 @@
         ctx.stroke();
     }
 
+    /* ---------- Lattice to part: zoom out into an acetabular cup ----------
+       The lattice wraps onto a hemisphere by arc length (azimuthal equidistant
+       about the point facing the camera), so at the start of the zoom the
+       screen is simply a close-up of the dome. While the dome is larger than
+       the screen it is drawn per frame as projected struts (few are visible);
+       once it fits, a pre-rendered image of the whole cup takes over. */
+    var CUP_Z = 9;                                  // how far the camera pulls back
+    var CUP_TILT = 34 * Math.PI / 180;              // camera elevation above the rim plane
+    var CUP_HOLES = [                               // [polar angle from apex, azimuth, angular radius]
+        [0.0, 0.0, 0.135],
+        [0.62, 0.05, 0.105], [0.57, 0.78, 0.100], [0.66, 1.50, 0.105],
+        [0.60, 2.25, 0.100], [0.63, 3.05, 0.105]
+    ];
+    var cup = null;                                 // {r, R, sinT, cosT, holes:[{c, rho}]}
+    var domeImg = document.createElement('canvas');
+    var domeCtx = domeImg.getContext('2d');
+    var domeReady = false, domeGen = 0, DOME_DPR = Math.min(DPR * 2, 3);
+    var grainDome = domeCtx.createPattern(grainTile, 'repeat');
+    var P0 = { x: 0, y: 0, z: 1 }, P1 = { x: 0, y: 0, z: 1 };
+
+    function layoutCup() {
+        var r = Math.min(H * 0.34, W * 0.40);
+        var sinT = Math.sin(CUP_TILT), cosT = Math.cos(CUP_TILT);
+        // cup axis and rim-plane basis in view space (x right, y down, z toward camera)
+        var ax = { x: 0, y: -cosT, z: sinT }, e1 = { x: 1, y: 0, z: 0 }, e2 = { x: 0, y: sinT, z: cosT };
+        var holes = [];
+        for (var i = 0; i < CUP_HOLES.length; i++) {
+            var psi = CUP_HOLES[i][0], om = CUP_HOLES[i][1];
+            var sp = Math.sin(psi), cp = Math.cos(psi), co = Math.cos(om), so = Math.sin(om);
+            holes.push({
+                c: { x: cp * ax.x + sp * (co * e1.x + so * e2.x),
+                     y: cp * ax.y + sp * (co * e1.y + so * e2.y),
+                     z: cp * ax.z + sp * (co * e1.z + so * e2.z) },
+                rho: CUP_HOLES[i][2], cosRho: Math.cos(CUP_HOLES[i][2] + 0.012), threaded: i === 0
+            });
+        }
+        cup = { r: r, R: CUP_Z * r, sinT: sinT, cosT: cosT, ax: ax, e1: e1, e2: e2, holes: holes };
+        return cup;
+    }
+
+    // lattice px (relative to the view centre) -> unit sphere point in view space
+    function toSphere(X, Y, R, out) {
+        var d = Math.sqrt(X * X + Y * Y);
+        if (d < 1e-6) { out.x = 0; out.y = 0; out.z = 1; return true; }
+        var al = d / R;
+        if (al >= 1.5707) { out.z = -1; return false; }
+        var sa = Math.sin(al);
+        out.x = sa * X / d; out.y = sa * Y / d; out.z = Math.cos(al);
+        return out.z > 0.015 && (-out.y * cup.cosT + out.z * cup.sinT) >= 0;   // facing camera and on the dome
+    }
+    function inHole(P) {
+        var hs = cup.holes;
+        for (var i = 0; i < hs.length; i++) {
+            var h = hs[i];
+            if (P.x * h.c.x + P.y * h.c.y + P.z * h.c.z > h.cosRho) return true;
+        }
+        return false;
+    }
+
+    // Path of the visible dome: upper half of the sphere disc plus the front
+    // half of the rim ellipse.
+    function domePath(g, cx, cy, rs) {
+        g.beginPath();
+        g.arc(cx, cy, rs, Math.PI, TAU);
+        g.ellipse(cx, cy, rs, rs * cup.sinT, 0, 0, Math.PI);
+        g.closePath();
+    }
+
+    // Struts of the tiles that fall inside a disc of arc radius dMax (lattice
+    // px) around the view centre, projected onto the sphere.
+    function strutTiles(g, cx, cy, rs, dMax, ti0, ti1, tj0, tj1) {
+        var R = cup.R, reach = dMax + spacing * 2.5;
+        for (var i = ti0; i <= ti1; i++) {
+            for (var j = tj0; j <= tj1; j++) {
+                var ox = i * W - W / 2, oy = j * H - H / 2;
+                for (var k = 0; k < edges.length; k++) {
+                    var e = edges[k];
+                    if (e.dup) continue;
+                    var X = e.mx + ox, Y = e.my + oy;
+                    if (X * X + Y * Y > reach * reach) continue;
+                    var a = nodes[e.a], b = nodes[e.b];
+                    if (!toSphere(a.x + ox, a.y + oy, R, P0)) continue;
+                    if (!toSphere(b.x + ox, b.y + oy, R, P1)) continue;
+                    if (inHole(P0) || inHole(P1)) continue;
+                    g.moveTo(cx + rs * P0.x, cy + rs * P0.y);
+                    g.lineTo(cx + rs * P1.x, cy + rs * P1.y);
+                }
+            }
+        }
+    }
+
+    function tileRange(dMax) {
+        var n = Math.ceil((dMax + spacing * 2.5 + W / 2) / W), m = Math.ceil((dMax + spacing * 2.5 + H / 2) / H);
+        return { i0: -n, i1: n, j0: -m, j1: m };
+    }
+
+    function shadeDome(g, cx, cy, rs, alpha) {
+        g.save();
+        g.globalCompositeOperation = 'source-atop';
+        g.globalAlpha = alpha;
+        var sh = g.createRadialGradient(cx - rs * 0.32, cy - rs * 0.40, rs * 0.08, cx, cy, rs * 1.25);
+        sh.addColorStop(0, 'rgba(255, 255, 255, 0.20)');
+        sh.addColorStop(0.42, 'rgba(0, 0, 0, 0)');
+        sh.addColorStop(1, 'rgba(0, 0, 0, 0.80)');
+        g.fillStyle = sh;
+        g.fillRect(cx - rs * 1.3, cy - rs * 1.3, rs * 2.6, rs * 2.6);
+        g.restore();
+    }
+
+    function drawHoles(g, cx, cy, rs, alpha) {
+        g.save();
+        g.globalAlpha = alpha;
+        var hs = cup.holes;
+        for (var i = 0; i < hs.length; i++) {
+            var h = hs[i], c = h.c;
+            if (c.z < 0.3) continue;   // edge-on holes read as slivers; the photo shows none
+            // basis perpendicular to c
+            var ux = -c.y, uy = c.x, uz = 0, ul = Math.sqrt(ux * ux + uy * uy) || 1; ux /= ul; uy /= ul;
+            var vx = c.y * uz - c.z * uy, vy = c.z * ux - c.x * uz, vz = c.x * uy - c.y * ux;
+            var cr = Math.cos(h.rho), sr = Math.sin(h.rho);
+            function ring(scale, dx, dy) {
+                g.beginPath();
+                for (var t = 0; t < 40; t++) {
+                    var an = t / 40 * TAU, ca = Math.cos(an) * sr * scale, sa = Math.sin(an) * sr * scale;
+                    var px = cr * c.x + ca * ux + sa * vx, py = cr * c.y + ca * uy + sa * vy;
+                    var sx = cx + rs * px + dx, sy = cy + rs * py + dy;
+                    if (t === 0) g.moveTo(sx, sy); else g.lineTo(sx, sy);
+                }
+                g.closePath();
+            }
+            // bore wall, then the opening shifted toward the sphere centre for depth
+            ring(1, 0, 0);
+            g.fillStyle = '#40444a'; g.fill();
+            g.lineWidth = Math.max(0.8, rs * 0.006); g.strokeStyle = 'rgba(225, 228, 232, 0.85)'; g.stroke();
+            var depth = rs * h.rho * 0.42;
+            ring(0.86, -c.x * depth, -c.y * depth);
+            g.fillStyle = '#0b0d10'; g.fill();
+            if (h.threaded) {
+                g.lineWidth = Math.max(0.6, rs * 0.004); g.strokeStyle = 'rgba(190, 194, 200, 0.7)';
+                ring(0.93, -c.x * depth * 0.18, -c.y * depth * 0.18); g.stroke();
+                ring(0.80, -c.x * depth * 0.36, -c.y * depth * 0.36); g.stroke();
+            }
+        }
+        g.restore();
+    }
+
+    function drawRim(g, cx, cy, rs, alpha) {
+        g.save();
+        g.globalAlpha = alpha;
+        g.beginPath();
+        g.ellipse(cx, cy, rs, rs * cup.sinT, 0, 0, Math.PI);
+        g.lineWidth = Math.max(1, rs * 0.014);
+        g.strokeStyle = 'rgba(214, 218, 223, 0.9)';
+        g.stroke();
+        g.lineWidth = Math.max(0.6, rs * 0.005);
+        g.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+        g.beginPath();
+        g.ellipse(cx, cy, rs * 0.995, rs * cup.sinT * 0.985, 0, 0.05, Math.PI - 0.05);
+        g.stroke();
+        g.restore();
+    }
+
+    // Per-frame dome render for the early zoom, when only part of the dome is on screen.
+    function drawDomeVector(cx, cy, rs, s, alpha) {
+        var corner = Math.sqrt(W * W + H * H) / 2 / rs;
+        var dMax = corner >= 1 ? cup.R * 1.5707 : cup.R * Math.asin(corner);
+        var tr = tileRange(dMax);
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        domePath(ctx, cx, cy, rs);
+        ctx.fillStyle = 'rgba(16, 18, 22, 0.92)';
+        ctx.fill();
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        strutTiles(ctx, cx, cy, rs, dMax, tr.i0, tr.i1, tr.j0, tr.j1);
+        var w = Math.max(0.7, strutW * s * 0.9);
+        if (s > 0.4) {
+            ctx.lineWidth = w; ctx.strokeStyle = '#4a4e54'; ctx.stroke();
+            ctx.lineWidth = w * 0.5; ctx.strokeStyle = '#8d9197'; ctx.stroke();
+        } else {
+            ctx.lineWidth = w; ctx.strokeStyle = '#7b7f85'; ctx.stroke();
+        }
+        ctx.restore();
+        shadeDome(ctx, cx, cy, rs, alpha);
+        drawHoles(ctx, cx, cy, rs, alpha);
+        if (rs < Math.sqrt(W * W + H * H)) drawRim(ctx, cx, cy, rs, alpha);
+    }
+
+    // Whole cup pre-rendered at 2x device resolution, in idle slices.
+    function scheduleDome() {
+        domeReady = false;
+        var gen = ++domeGen;
+        if (!cup) layoutCup();
+        var rs = cup.r * DOME_DPR, size = Math.ceil(rs * 2.04);
+        var cx = size / 2, cy = size / 2;
+        domeImg.width = size; domeImg.height = size;
+        domeCtx.setTransform(1, 0, 0, 1, 0, 0);
+        domeCtx.clearRect(0, 0, size, size);
+        domePath(domeCtx, cx, cy, rs);
+        domeCtx.fillStyle = 'rgba(16, 18, 22, 0.92)';
+        domeCtx.fill();
+        domeCtx.lineCap = 'round';
+        var dMax = cup.R * 1.5707, tr = tileRange(dMax);
+        var wdt = Math.max(0.8, strutW / CUP_Z * DOME_DPR * 0.9);
+        var i = tr.i0, j = tr.j0;
+        function step() {
+            if (gen !== domeGen) return;
+            var t0 = performance.now();
+            while (performance.now() - t0 < 7) {
+                if (i > tr.i1) {
+                    shadeDome(domeCtx, cx, cy, rs, 1);
+                    domeCtx.save();
+                    domeCtx.globalCompositeOperation = 'source-atop';
+                    domeCtx.globalAlpha = 0.5;
+                    domeCtx.fillStyle = grainDome;
+                    domeCtx.fillRect(0, 0, size, size);
+                    domeCtx.restore();
+                    drawHoles(domeCtx, cx, cy, rs, 1);
+                    drawRim(domeCtx, cx, cy, rs, 1);
+                    domeReady = true;
+                    kick();
+                    return;
+                }
+                domeCtx.beginPath();
+                strutTiles(domeCtx, cx, cy, rs, dMax, i, i, j, j);
+                domeCtx.lineWidth = wdt; domeCtx.strokeStyle = '#4a4e54'; domeCtx.stroke();
+                domeCtx.lineWidth = wdt * 0.5; domeCtx.strokeStyle = '#8d9197'; domeCtx.stroke();
+                j++;
+                if (j > tr.j1) { j = tr.j0; i++; }
+            }
+            setTimeout(step, 16);
+        }
+        setTimeout(step, 60);
+    }
+
+    function drawZoom(p) {
+        if (!cup) layoutCup();
+        var e = p * p * (3 - 2 * p);
+        var s = Math.pow(CUP_Z, -e);                     // lattice scale: 1 -> 1/Z
+        var rs = s * cup.R;                              // dome radius on screen
+        var cyEnd = H * 0.46 + cup.r * (1 - cup.sinT) / 2;
+        var cx = W / 2, cy = H / 2 + (cyEnd - H / 2) * e;
+
+        var w = clamp(e / 0.10, 0, 1);                   // flat -> sphere
+        var sSwitch = Math.min(0.6, 1.6 * DOME_DPR / CUP_Z);
+        var w2 = domeReady ? clamp((sSwitch - s) / 0.06, 0, 1) : 0;   // projected struts -> image
+
+        if (w < 1) {
+            ctx.save();
+            ctx.globalAlpha = 1 - w;
+            ctx.setTransform(s * DPR, 0, 0, s * DPR, (cx - s * W / 2) * DPR, (cy - s * H / 2) * DPR);
+            var src = metalReady ? metal : wire;
+            var n = Math.ceil((1 / s - 1) / 2);
+            for (var i = -n; i <= n; i++) for (var j = -n; j <= n; j++)
+                ctx.drawImage(src, 0, 0, src.width, src.height, i * W, j * H, W, H);
+            ctx.restore();
+        }
+        if (w > 0 && w2 < 1) drawDomeVector(cx, cy, rs, s, w * (1 - w2));
+        if (w2 > 0) {
+            ctx.save();
+            ctx.globalAlpha = w2;
+            var k = rs / (cup.r * DOME_DPR);
+            ctx.drawImage(domeImg, cx - domeImg.width / 2 * k, cy - domeImg.height / 2 * k, domeImg.width * k, domeImg.height * k);
+            ctx.restore();
+        }
+        if (w > 0) {
+            ctx.save();
+            ctx.globalCompositeOperation = 'source-atop';
+            ctx.globalAlpha = 0.45 * w * (1 - w2);
+            ctx.fillStyle = grainMain;
+            ctx.fillRect(0, 0, W, H);
+            ctx.restore();
+        }
+    }
+
     /* ---------- Input ---------- */
     window.addEventListener('pointermove', function (e) {
         mouse.tx = e.clientX; mouse.ty = e.clientY;
@@ -840,6 +1155,14 @@
         var y = window.scrollY, vh = H || window.innerHeight;
         frozen = y > 24;
         frontY = measureFront();
+        if (partSection) {
+            // 0 when the section's top reaches the top of the viewport, 1 at the page bottom.
+            var sectionTop = partSection.getBoundingClientRect().top + y;
+            var maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            var total = maxScroll - sectionTop;
+            zoomP = total > 0 ? clamp((y - sectionTop) / total, 0, 1) : 0;
+            document.documentElement.style.setProperty('--zoom', zoomP.toFixed(4));
+        }
         var scrolled = y > 40;
         if (topbar) topbar.classList.toggle('is-scrolled', scrolled);
         document.body.classList.toggle('is-scrolled', scrolled);
@@ -875,10 +1198,12 @@
     window.addEventListener('resize', function () {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(function () {
-            var w = window.innerWidth, h = window.innerHeight;
+            var w = canvas.offsetWidth, h = canvas.offsetHeight;
+            if (w === lastW && h === lastH) { frontY = measureFront(); kick(); return; }
             var big = Math.abs(w - lastW) / lastW > 0.02 || Math.abs(h - lastH) / lastH > 0.25;
             sizeCanvases();
             frontY = measureFront();
+            cup = null;
             if (big) { lastW = w; lastH = h; generate(false); }
             else { renderWire(); scheduleMetal(); kick(); }
         }, 160);

@@ -74,9 +74,11 @@ body {
 /* ===== Lattice canvas ===== */
 .lattice-canvas {
     position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100lvh;   /* iOS Safari: stay the size of the largest viewport while the toolbar collapses */
     z-index: 0;
     display: block;
 }
@@ -816,9 +818,49 @@ body.is-scrolled .hero-hint {
     box-shadow: 0 12px 30px -12px rgba(255, 255, 255, 0.45);
 }
 
+/* ===== Lattice to part ===== */
+.part {
+    position: relative;
+    min-height: 240vh;
+    min-height: 240lvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    pointer-events: none;
+}
+
+.part-caption {
+    position: sticky;
+    bottom: 0;
+    padding: 0 var(--space-lg) 1.6rem;
+    text-align: center;
+    opacity: calc((var(--zoom, 0) - 0.82) * 5.5);
+    transform: translateY(calc((1 - var(--zoom, 0)) * 24px));
+}
+
+.part-eyebrow {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.35rem;
+}
+
+.part-text {
+    font-family: var(--font-serif);
+    font-size: clamp(1rem, 1.6vw, 1.2rem);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--color-text-muted);
+    max-width: 38rem;
+    margin: 0 auto;
+    text-wrap: balance;
+}
+
 /* ===== Footer ===== */
 .footer {
-    padding: var(--space-xl) 0 var(--space-lg);
+    padding: 0.5rem 0 1rem;
     text-align: center;
 }
 

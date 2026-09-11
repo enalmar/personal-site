@@ -38,6 +38,16 @@ One fixed canvas sits behind the whole page.
   a pre-rendered matte-metal layer (diffuse shading, powder-bed grain, joint
   shadows) takes over. The metal layer is drawn once in idle slices after each
   generation, so scrolling only blits it.
+- **Lattice to part** — the last section zooms the camera out: the lattice you
+  scrolled through is the porous shell of an acetabular cup. The lattice wraps
+  onto a hemisphere by arc length about the point facing the camera, so the start
+  of the zoom is just a close-up of the dome. While the dome is bigger than the
+  screen its struts are projected per frame (few are visible); once it fits, a
+  pre-rendered image of the whole cup (rendered in idle slices after each
+  generation) takes over. The lattice is generated on a torus so copies tile
+  seamlessly over the sphere. Tunables: `CUP_Z` (zoom), `CUP_TILT`, `CUP_HOLES`.
+- The canvas is sized to `100lvh`, so iOS Safari's collapsing toolbar never
+  resizes or stretches it.
 - Everything respects `prefers-reduced-motion`.
 
 ## Editing
