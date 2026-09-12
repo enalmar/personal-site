@@ -33,7 +33,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=8">
+    <link rel="stylesheet" href="style.css?v=12">
 
     <script type="application/ld+json">
     {
@@ -86,7 +86,7 @@
             <nav class="topbar-links" aria-label="Sections">
                 <a href="#about">Profile</a>
                 <a href="#experience">Experience</a>
-                <a href="#research">Innovation</a>
+                <a href="#research">Research</a>
                 <a href="#contact">Connect</a>
             </nav>
         </div>
@@ -95,12 +95,6 @@
     <main id="main">
 
     <section id="home" class="hero" aria-label="Interactive lattice">
-        <div class="hero-lockup">
-            <h1 class="hero-statement">
-                <span class="statement-line"><span class="dynamic-word dynamic-word-1" data-words='["Scaling", "Building", "Leading", "Driving", "Transforming"]'>Scaling</span> <span class="dynamic-word dynamic-word-2" data-words='["deep tech", "manufacturing", "products", "innovation", "operations", "technologies"]'>deep tech</span>.</span>
-                <span class="statement-line statement-subtitle">From research to production.</span>
-            </h1>
-        </div>
         <p class="hero-hint glass-lite" id="heroHint">
             <span class="hint-item hint-cursor"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M3 2.5l9.5 4.2-4.1 1.3-1.3 4.1z"/></svg>Move the cursor</span>
             <span class="hint-item hint-touch"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8.5V3.2a1.2 1.2 0 0 1 2.4 0V8l3.1.9a2 2 0 0 1 1.4 2l-.4 2.2A1.6 1.6 0 0 1 11 14.5H7.6a2 2 0 0 1-1.6-.8L3.6 10.5a1 1 0 0 1 1.5-1.3L6 10"/></svg>Drag to explore</span>
@@ -111,31 +105,60 @@
 
     <section id="about" class="section" aria-labelledby="about-title">
         <div class="container">
-            <h2 class="section-title" id="about-title">Profile</h2>
-            <div class="glass card lead-card">
-                <p class="about-lead">
-                    I lead at the intersection of deep tech and commercial execution: scaling advanced manufacturing, driving product introduction, and building teams that turn fundamental R&D into products.
-                </p>
-                <p class="about-body">
-                    Oxford-trained in engineering; co-founder and senior leader at Alloyed. I combine technical depth with operational and commercial leadership — from lab and pilot to mass production.
-                </p>
-            </div>
-            <div class="expertise-areas">
-                <div class="glass card expertise-item">
-                    <span class="expertise-label">Materials &amp; process</span>
-                    <p>Alloy design, high-temperature processing, characterisation, simulation</p>
+            <div class="glass card profile-card">
+                <h2 class="section-title" id="about-title">Profile</h2>
+                <div class="profile-intro">
+                    <p class="about-lead">
+                        I lead at the intersection of deep tech and commercial execution: scaling advanced manufacturing, driving new product introduction, and building teams that turn research into shippable products.
+                    </p>
+                    <p class="about-body">
+                        Oxford-trained in engineering; co-founder and senior leader at Alloyed. I combine technical depth with operational and commercial leadership. From the materials lab and the pilot scale to mass production.
+                    </p>
                 </div>
-                <div class="glass card expertise-item">
-                    <span class="expertise-label">Digital factory</span>
-                    <p>Additive manufacturing, process stability, scaling &amp; industrialisation, quality systems, factory sentience</p>
-                </div>
-                <div class="glass card expertise-item">
-                    <span class="expertise-label">Product &amp; NPI</span>
-                    <p>Technical leadership, product development, design, new product introduction</p>
-                </div>
-                <div class="glass card expertise-item">
-                    <span class="expertise-label">Business &amp; operations</span>
-                    <p>P&amp;L ownership, revenue growth, international operations, team building</p>
+
+                <div class="scale" id="scale" aria-label="The scales I work across">
+                    <div class="scale-head">
+                        <p class="scale-title">Nine orders of magnitude</p>
+                        <p class="scale-sub">From the atom to the factory.</p>
+                    </div>
+
+                    <div class="scale-ruler" aria-hidden="true">
+                        <div class="scale-line"></div>
+                        <span class="scale-tick" style="--p:0"><i>100 nm</i></span>
+                        <span class="scale-tick" style="--p:0.2222"><i>10 µm</i></span>
+                        <span class="scale-tick" style="--p:0.4444"><i>1 mm</i></span>
+                        <span class="scale-tick" style="--p:0.6667"><i>10 cm</i></span>
+                        <span class="scale-tick" style="--p:0.8889"><i>10 m</i></span>
+                        <span class="scale-tick" style="--p:1"><i>100 m</i></span>
+                    </div>
+
+                    <ol class="scale-points">
+                        <li class="scale-point" style="--p:0.053; --i:0" data-band="materials"><b>γ′ precipitates</b><span>300 nm</span></li>
+                        <li class="scale-point alt" style="--p:0.222; --i:1" data-band="materials"><b>Grain boundaries</b><span>10 µm</span></li>
+                        <li class="scale-point" style="--p:0.411; --i:2" data-band="materials product"><b>Unit cell</b><span>500 µm</span></li>
+                        <li class="scale-point alt" style="--p:0.522; --i:3" data-band="materials product"><b>Metamaterials</b><span>5 mm</span></li>
+                        <li class="scale-point" style="--p:0.633; --i:4" data-band="product business"><b>Functionalised components</b><span>50 mm</span></li>
+                        <li class="scale-point alt" style="--p:0.811; --i:5" data-band="product business"><b>Manufacturing system</b><span>2 m</span></li>
+                        <li class="scale-point" style="--p:0.967; --i:6" data-band="business"><b>Factories</b><span>50 m</span></li>
+                    </ol>
+
+                    <ol class="scale-bands">
+                        <li class="scale-band" data-band="materials" style="--a:0.03; --b:0.50" tabindex="0">
+                            <span class="band-bar"></span>
+                            <span class="band-label">Materials &amp; process</span>
+                            <span class="band-desc">Alloy design, high-temperature processing, characterisation, simulation</span>
+                        </li>
+                        <li class="scale-band" data-band="product" style="--a:0.36; --b:0.84" tabindex="0">
+                            <span class="band-bar"></span>
+                            <span class="band-label">Product &amp; digital factory</span>
+                            <span class="band-desc">Additive manufacturing, new product introduction, process stability, quality systems, factory sentience</span>
+                        </li>
+                        <li class="scale-band" data-band="business" style="--a:0.60; --b:1" tabindex="0">
+                            <span class="band-bar"></span>
+                            <span class="band-label">Business &amp; operations</span>
+                            <span class="band-desc">P&amp;L ownership, revenue growth, international operations, team building</span>
+                        </li>
+                    </ol>
                 </div>
             </div>
         </div>
@@ -143,8 +166,8 @@
 
     <section id="experience" class="section" aria-labelledby="experience-title">
         <div class="container">
-            <h2 class="section-title" id="experience-title">Experience</h2>
             <div class="glass card timeline-card">
+                <h2 class="section-title" id="experience-title">Experience</h2>
                 <div class="timeline">
                     <article class="timeline-item current">
                         <time class="timeline-date" datetime="2025-07">Jul 2025</time>
@@ -229,51 +252,128 @@
 
     <section id="research" class="section" aria-labelledby="research-title">
         <div class="container">
-            <h2 class="section-title" id="research-title">Innovation &amp; impact</h2>
-            <div class="glass card intro-card">
-                <p class="research-intro">Bridging materials science, manufacturing and markets: additive manufacturing, high-performance alloys, and commercial applications from aerospace to biomedical and consumer electronics.</p>
-                <a href="https://scholar.google.co.uk/citations?user=bzOAaRsAAAAJ&amp;hl=en" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
-                    Google Scholar
-                </a>
-            </div>
-            <div class="research-areas">
-                <div class="glass card research-area">
-                    <h3>Materials</h3>
-                    <ul>
-                        <li>Titanium alloys (biomedical)</li>
-                        <li>Superalloys (aerospace)</li>
-                        <li>High-temperature processing</li>
-                        <li>Crystal plasticity &amp; superplasticity</li>
-                    </ul>
+            <div class="glass card research-card">
+                <h2 class="section-title" id="research-title">Research &amp; innovation</h2>
+
+                <div class="research-head">
+                    <div class="research-lead">
+                        <p class="research-intro">
+                            Fifty-one papers and six patent families over a decade. My research has focused on understanding the underlying physical mechanisms, designing the alloys and the geometries around that understanding, then taking it into differentiated products. Below, four public examples of some of my earlier work.
+                        </p>
+                        <a href="https://scholar.google.co.uk/citations?user=bzOAaRsAAAAJ&amp;hl=en" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+                            Google Scholar
+                        </a>
+                    </div>
+                    <div class="research-stats">
+                        <dl class="metrics">
+                            <div class="metric"><dd>2,836</dd><dt>citations</dt></div>
+                            <div class="metric"><dd>24</dd><dt>h-index</dt></div>
+                            <div class="metric"><dd>51</dd><dt>works</dt></div>
+                            <div class="metric"><dd>6</dd><dt>patents</dt></div>
+                        </dl>
+                        <figure class="cites-chart" id="citesChart" aria-label="Citations per year, 2016 to 2026">
+                            <figcaption>Citations per year · <span class="cites-note">2026 to date</span></figcaption>
+                        </figure>
+                    </div>
                 </div>
-                <div class="glass card research-area">
-                    <h3>Manufacturing</h3>
-                    <ul>
-                        <li>Laser Powder Bed Fusion (LPBF)</li>
-                        <li>Process modelling &amp; simulation</li>
-                        <li>Quality systems (AS9100D)</li>
-                        <li>Scaling &amp; optimisation</li>
-                    </ul>
+
+                <div class="themes">
+
+                    <article class="theme" id="theme-bone">
+                        <div class="theme-viz">
+                            <canvas id="vizBone" class="viz-canvas" aria-hidden="true"></canvas>
+                            <label class="viz-control">
+                                <span>Relative density</span>
+                                <input type="range" id="boneDensity" min="6" max="40" value="20" step="1" aria-valuetext="20%">
+                                <output id="boneDensityOut" for="boneDensity">20%</output>
+                            </label>
+                        </div>
+                        <div class="theme-text">
+                            <p class="theme-eyebrow">Additive manufacturing · metamaterials</p>
+                            <h3>Metallic bone</h3>
+                            <p>Solid titanium is ten times stiffer than the bone around it. In a solid implant, the stiff material carries the load, and the bone, unloaded, resorbs. Metamaterials allow stiffness tailoring as another design variable. This work established how to do that, and then characterised the result, understanding how thin walls and beams really behave, in strength and in fatigue. The same design principle has been adopted for light-weighting and thermal management design.</p>
+                            <ul class="papers">
+                            <li class="patent"><a href="https://patents.google.com/patent/WO2021009515A1/en" target="_blank" rel="noopener noreferrer">Scaffold for bone ingrowth</a><span>WO2021009515A1 · filed 2020 · Oxford University Innovation</span></li>
+                            <li><a href="https://scholar.google.com/scholar?q=Synthetic+bone:+Design+by+additive+manufacturing" target="_blank" rel="noopener noreferrer">Synthetic bone: Design by additive manufacturing</a><span>Acta Biomaterialia · 2019 · 366 citations</span></li>
+                            <li><a href="https://scholar.google.com/scholar?q=Design+of+metallic+bone+by+additive+manufacturing" target="_blank" rel="noopener noreferrer">Design of metallic bone by additive manufacturing</a><span>Scripta Materialia · 2019 · 261 citations</span></li>
+                            <li><a href="https://scholar.google.com/scholar?q=On+the+size+and+orientation+effect+in+additive+manufactured+Ti-6Al-4V" target="_blank" rel="noopener noreferrer">On the size and orientation effect in additive manufactured Ti-6Al-4V</a><span>Materials &amp; Design · 2020 · 206 citations</span></li>
+                            <li><a href="https://scholar.google.com/scholar?q=Comparison+of+selective+laser+melted+commercially+pure+titanium+sheet-based+triply+periodic+minimal+surfaces+and+trabecular-like+strut-based+scaffolds+for+tissue+engineering" target="_blank" rel="noopener noreferrer">Comparison of selective laser melted commercially pure titanium sheet-based triply periodic minimal surfaces and trabecular-like strut-based scaffolds for tissue engineering</a><span>Advanced Engineering Materials · 2022 · 37 citations</span></li>
+                            <li><a href="https://scholar.google.com/scholar?q=Biomechanical+comparison+of+periprosthetic+femoral+fracture+risk+in+three+femoral+components+in+a+sawbone+model" target="_blank" rel="noopener noreferrer">Biomechanical comparison of periprosthetic femoral fracture risk in three femoral components in a sawbone model</a><span>The Journal of Arthroplasty · 2021 · 30 citations</span></li>
+                            <li><a href="https://scholar.google.com/scholar?q=Cortico-cancellous+osseointegration+into+additively+manufactured+titanium+implants+using+a+load-bearing+femoral+ovine+model" target="_blank" rel="noopener noreferrer">Cortico-cancellous osseointegration into additively manufactured titanium implants using a load-bearing femoral ovine model</a><span>Frontiers in Bioengineering · 2024 · 9 citations</span></li>
+                            </ul>
+                        </div>
+                    </article>
+
+                    <article class="theme" id="theme-alloys">
+                        <div class="theme-viz">
+                            <canvas id="vizAlloys" class="viz-canvas" aria-hidden="true"></canvas>
+                            <p class="viz-caption">Illustrative design space · hover a candidate</p>
+                        </div>
+                        <div class="theme-text">
+                            <p class="theme-eyebrow">Computational alloy design</p>
+                            <h3>Alloys by design</h3>
+                            <p>Physics-based models score thousands of alloy candidates for the optimisation target. A handful will sit on the area where no property can improve without another giving way; this is the Pareto front. This method was used to produce a low-modulus titanium alloy for printed implants.</p>
+                            <ul class="papers">
+                            <li><a href="https://scholar.google.com/scholar?q=Alloys-by-design:+A+low-modulus+titanium+alloy+for+additively+manufactured+biomedical+implants" target="_blank" rel="noopener noreferrer">Alloys-by-design: A low-modulus titanium alloy for additively manufactured biomedical implants</a><span>Acta Materialia · 2022 · 156 citations</span></li>
+                            <li><a href="https://scholar.google.com/scholar?q=A+novel+low-modulus+titanium+alloy+for+biomedical+applications:+a+comparison+between+selective+laser+melting+and+metal+injection+moulding" target="_blank" rel="noopener noreferrer">A novel low-modulus titanium alloy for biomedical applications: a comparison between selective laser melting and metal injection moulding</a><span>Materials Science &amp; Engineering A · 2021 · 60 citations</span></li>
+                            <li class="patent"><a href="https://patents.google.com/patent/EP3759258B1/en" target="_blank" rel="noopener noreferrer">A bio-compatible titanium alloy optimised for additive manufacturing</a><span>EP3759258B1 · granted 2022 · Alloyed</span></li>
+                            <li class="patent"><a href="https://patents.google.com/patent/GB2630026A/en" target="_blank" rel="noopener noreferrer">A strong and low-stiffness bio-compatible titanium alloy</a><span>GB2630026A · filed 2023 · Alloyed</span></li>
+                            </ul>
+                        </div>
+                    </article>
+
+                    <article class="theme" id="theme-superplastic">
+                        <div class="theme-viz">
+                            <canvas id="vizSuper" class="viz-canvas" aria-hidden="true"></canvas>
+                            <p class="viz-caption">Grain boundary sliding · grains stay equiaxed as the sample stretches</p>
+                        </div>
+                        <div class="theme-text">
+                            <p class="theme-eyebrow">Deformation mechanisms</p>
+                            <h3>Superplasticity</h3>
+                            <p>At the right temperature and strain rate, a fine-grained titanium alloy will stretch to several times its length without fracture. This is because the grains slide past one another and rotate rather than elongate. Watching that happen in situ, and modelling why, turned an empirical forming process into one that can be modelled and optimised. The understanding was used to design a titanium alloy for lower-cost superplastic forming.</p>
+                            <ul class="papers">
+                            <li><a href="https://scholar.google.com/scholar?q=Superplasticity+in+Ti–6Al–4V:+Characterisation,+modelling+and+applications" target="_blank" rel="noopener noreferrer">Superplasticity in Ti–6Al–4V: Characterisation, modelling and applications</a><span>Acta Materialia · 2015 · 335 citations</span></li>
+                            <li><a href="https://scholar.google.com/scholar?q=On+the+mechanisms+of+superplasticity+in+Ti–6Al–4V" target="_blank" rel="noopener noreferrer">On the mechanisms of superplasticity in Ti–6Al–4V</a><span>Acta Materialia · 2016 · 274 citations</span></li>
+                            <li><a href="https://scholar.google.com/scholar?q=Mechanisms+of+Superplasticity+in+Titanium+Alloys:+Measurement,+In+Situ+Observations+and+Rationalization" target="_blank" rel="noopener noreferrer">Mechanisms of Superplasticity in Titanium Alloys: Measurement, In Situ Observations and Rationalization</a><span>Defect and Diffusion Forum · 2018 · 9 citations</span></li>
+                            
+                            <li><a href="https://scholar.google.com/scholar?q=Alloys-by-design:+application+to+titanium+alloys+for+optimal+superplasticity" target="_blank" rel="noopener noreferrer">Alloys-by-design: application to titanium alloys for optimal superplasticity</a><span>Acta Materialia · 2019 · 140 citations</span></li>
+                            <li class="patent"><a href="https://patents.google.com/patent/WO2018138502A1/en" target="_blank" rel="noopener noreferrer">A titanium-based alloy</a><span>WO2018138502A1 · filed 2018 · Oxford University Innovation</span></li>
+                            </ul>
+                        </div>
+                    </article>
+
+                    <article class="theme" id="theme-superalloys">
+                        <div class="theme-viz">
+                            <canvas id="vizSuperalloy" class="viz-canvas" aria-hidden="true"></canvas>
+                            <p class="viz-caption">γ′ cuboids in a γ matrix · a microtwin nucleates on {111}, thickens, and shears the precipitates it crosses</p>
+                        </div>
+                        <div class="theme-text">
+                            <p class="theme-eyebrow">High-temperature materials · aerospace</p>
+                            <h3>Superalloys at temperature</h3>
+                            <p>Nickel superalloys hold a turbine together at temperatures where most metals melt. Their strength comes from a lattice of cuboidal precipitates, and their failure from the mechanisms that cut through them. This work pinned several of those mechanisms down: the microtwinning effect in single crystals, and the strengthening that boron does to grain boundaries. It built the miniaturised tests that let materials be assessed from grams of material rather than kilograms, and applied the alloys-by-design method to nickel.</p>
+                            <ul class="papers">
+                            <li><a href="https://scholar.google.com/scholar?q=On+the+microtwinning+mechanism+in+a+single+crystal+superalloy" target="_blank" rel="noopener noreferrer">On the microtwinning mechanism in a single crystal superalloy</a><span>Acta Materialia · 2017 · 194 citations</span></li>
+                            <li><a href="https://scholar.google.com/scholar?q=On+the+role+of+boron+on+improving+ductility+in+a+new+polycrystalline+superalloy" target="_blank" rel="noopener noreferrer">On the role of boron on improving ductility in a new polycrystalline superalloy</a><span>Acta Materialia · 2017 · 153 citations</span></li>
+                            <li><a href="https://scholar.google.com/scholar?q=Grain+boundary+properties+of+a+nickel-based+superalloy:+Characterisation+and+modelling" target="_blank" rel="noopener noreferrer">Grain boundary properties of a nickel-based superalloy: Characterisation and modelling</a><span>Acta Materialia · 2018 · 91 citations</span></li>
+                            <li class="patent"><a href="https://patents.google.com/patent/GB2584905B/en" target="_blank" rel="noopener noreferrer">A nickel-based alloy</a><span>GB2584905B · granted 2022 · Alloyed</span></li>
+                            <li class="patent"><a href="https://patents.google.com/patent/GB2592182B/en" target="_blank" rel="noopener noreferrer">A nickel-based alloy</a><span>GB2592182B · granted 2022 · Alloyed</span></li>
+                            <li><a href="https://scholar.google.com/scholar?q=Architected+superalloys:+A+pathway+to+lightweight+high+temperature+materials" target="_blank" rel="noopener noreferrer">Architected superalloys: A pathway to lightweight high temperature materials</a><span>Scripta Materialia · 2025 · 10 citations</span></li>
+                            </ul>
+                        </div>
+                    </article>
+
                 </div>
-                <div class="glass card research-area">
-                    <h3>Applications</h3>
-                    <ul>
-                        <li>Aerospace</li>
-                        <li>Biomedical implants</li>
-                        <li>AR/VR wearables</li>
-                        <li>Consumer electronics</li>
-                    </ul>
-                </div>
+
+                <p class="research-also"><b>Also</b> — rate-dependent mechanics of adhesive joints for multi-material aerostructures, with Nik Petrinic's impact group: five papers, around 170 citations, including <a href="https://scholar.google.com/scholar?q=Experimental+characterisation+and+numerical+modelling+of+the+influence+of+bondline+thickness" target="_blank" rel="noopener noreferrer">Journal of the Mechanics and Physics of Solids</a> (2019).</p>
             </div>
         </div>
     </section>
 
     <section id="contact" class="section" aria-labelledby="contact-title">
         <div class="container">
-            <h2 class="section-title" id="contact-title">Connect</h2>
             <div class="glass card contact-card">
-                <p class="contact-text">Interested in discussing partnerships, deep-tech ventures, or industry challenges in advanced manufacturing.</p>
+                <h2 class="section-title" id="contact-title">Connect</h2>
                 <a href="https://www.linkedin.com/in/ealabort" target="_blank" rel="noopener noreferrer" class="linkedin-btn">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>
                     LinkedIn
@@ -297,6 +397,7 @@
         </div>
     </footer>
 
-    <script src="script.js?v=18"></script>
+    <script src="script.js?v=19"></script>
+    <script src="research.js?v=1"></script>
 </body>
 </html>

@@ -15,7 +15,8 @@ python3 -m http.server 8000
 | --- | --- |
 | `index.html` | The whole page: hero, profile, experience timeline, innovation, contact |
 | `style.css` | All styling; design tokens live in `:root` at the top |
-| `script.js` | The lattice engine (generation, cursor field, scroll-driven print), rotating words, top bar, scroll reveals |
+| `script.js` | The lattice engine (generation, cursor field, scroll-driven print, cup zoom), top bar, scroll reveals |
+| `research.js` | Profile scale diagram, citations chart, and the four research sketches (canvas) |
 | `404.html` | Not-found page, styled to match |
 | `og-image.png` | 1200×630 link-preview card (LinkedIn, Slack, X) |
 | `favicon.svg` | "EA" monogram |
@@ -49,6 +50,23 @@ One fixed canvas sits behind the whole page.
 - The canvas is sized to `100lvh`, so iOS Safari's collapsing toolbar never
   resizes or stretches it.
 - Everything respects `prefers-reduced-motion`.
+
+## Research sketches
+
+Four small canvas animations in `research.js`, one per research strand. Each
+runs only while on screen, stops when the tab is hidden, and holds a static
+frame under `prefers-reduced-motion`.
+
+- **Metallic bone** — relative density → strut thickness and Gibson–Ashby
+  modulus against bone. Interactive slider.
+- **Alloys by design** — a Pareto front in modulus–strength space. The points
+  are illustrative, not real alloy data.
+- **Superplasticity** — Voronoi grains under affine strain with relaxation, so
+  they slide and rotate rather than elongate.
+- **Superalloys** — γ′ cuboids with a thickening {111} microtwin.
+
+Citation numbers in the Research section are a snapshot of Google Scholar and
+need updating by hand.
 
 ## Editing
 

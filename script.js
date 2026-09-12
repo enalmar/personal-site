@@ -1,7 +1,8 @@
 /* Enrique Alabort — personal site
    A stochastic strut lattice (Poisson-disc nodes, Delaunay struts) that grows
-   in on load, thickens around the cursor, freezes on scroll, and then prints
-   bottom-up into metal as the page is scrolled. */
+   in on load, thickens around the cursor, freezes on scroll, prints into metal
+   as the page is scrolled, and finally zooms out into an acetabular cup.
+   The Profile and Research visualisations live in research.js. */
 (function () {
     'use strict';
 
@@ -57,33 +58,6 @@
             item.classList.add('reveal');
             item.style.transitionDelay = (Math.min(i % 4, 3) * 60) + 'ms';
             observer.observe(item);
-        });
-    })();
-
-    /* ===== Rotating words in the hero ===== */
-    (function () {
-        var dynamicWords = document.querySelectorAll('.dynamic-word');
-        if (!dynamicWords.length || reduced()) return;
-        dynamicWords.forEach(function (el, index) {
-            var words;
-            try { words = JSON.parse(el.getAttribute('data-words')); } catch (err) { return; }
-            if (!Array.isArray(words) || words.length < 2) return;
-            var current = 0, timer = null;
-            function rotate() {
-                if (document.hidden) return;
-                el.style.opacity = '0';
-                el.style.transform = 'translateY(-8px)';
-                setTimeout(function () {
-                    current = (current + 1) % words.length;
-                    el.textContent = words[current];
-                    el.style.opacity = '1';
-                    el.style.transform = 'translateY(0)';
-                }, 380);
-            }
-            setTimeout(function () { timer = setInterval(rotate, 3200); }, 3200 + index * 1600);
-            reduceMotionQuery.addEventListener('change', function (e) {
-                if (e.matches && timer) { clearInterval(timer); timer = null; }
-            });
         });
     })();
 
